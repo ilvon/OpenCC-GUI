@@ -1,11 +1,11 @@
 # OpenCC-GUI
 GUI implementation of [OpenCC](https://github.com/BYVoid/OpenCC)
 
-![image](https://github.com/thisObedience/OpenCC-GUI/assets/76443690/6ab35df3-5d23-4e50-81d8-d78e41ec4b75)
+![gui](https://github.com/thisObedience/OpenCC-GUI/assets/76443690/ce3e76d8-d5cd-4828-a9b7-79422c50ed4d)
 
 CLI implementation: 
 
-![image](https://github.com/thisObedience/OpenCC-GUI/assets/76443690/e91d51a5-56cd-4ebc-be98-41fbdedc2f5e)
+![cli](https://github.com/thisObedience/OpenCC-GUI/assets/76443690/7334843f-42dd-4dbe-ba5d-d36bca8fb9de)
 
 ## Remarks
 - executables from [Release](https://github.com/thisObedience/OpenCC-GUI/releases) are compiled with Pyinstaller 5.13.0, Python 3.11.2
