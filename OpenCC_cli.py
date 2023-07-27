@@ -8,7 +8,7 @@ class cli_param():
     fformat = (('All','*.*'), ('Text-based', '*.txt;*.csv;*.html;*.json;*.xml;*.cfg;*.ini;*.md;*.log;*.yaml'),
             ('Subtitle','*.srt;*.ass;*.sub;*.vtt;*.lrc'))
     class conv_langs():  
-        mapping = {
+        lang_map = {
             's' : '簡體',
             't' : '繁體',
             'tw' : '臺灣繁體',
@@ -23,9 +23,6 @@ class cli_param():
         tw = ['s','t','sp']
         hk = ['s','t']
         jp = ['t']
-        json_name = ['s2t','t2s','s2tw','tw2s','s2hk','hk2s',
-                's2twp','tw2sp','t2tw','hk2t','t2hk','t2jp','jp2t','tw2t']
-
 
 def opencc_converter(src_files, lang_json):       
     conv = opencc.OpenCC(lang_json)
@@ -50,23 +47,29 @@ def opencc_CLI():
     
     while True:
         for i, opt in enumerate(cli_param.conv_langs.lang_key[:5]):
-            print(f'{i+1}. {cli_param.conv_langs.mapping[opt]}')
-        original_lang_idx = int(input('原有語言： '))
-        if original_lang_idx > 0 and original_lang_idx < 6:
-            break
-        print('\n請輸入正確選項\n')
+            print(f'{i+1}. {cli_param.conv_langs.lang_map[opt]}')
+        original_lang_idx = input('原有語言： ')
+        if original_lang_idx.isdigit():
+            original_lang_idx = int(original_lang_idx)
+            if original_lang_idx > 0 and original_lang_idx < 6:
+                break
+        print('\n請輸入正確選項\n')     
     ori_lang = cli_param.conv_langs.lang_key[original_lang_idx - 1]
+    
     print('-----------------------------------------------------------------------')
+    
     while True:
         possible_out = getattr(cli_param.conv_langs, ori_lang)
         for i, member in enumerate(possible_out):
-            print(f'{i+1}. {cli_param.conv_langs.mapping[member]}')
-        target_lang_idx = int(input('目標語言： '))
-        if (target_lang_idx > 0) and (target_lang_idx < len(possible_out) + 1):
-            break
+            print(f'{i+1}. {cli_param.conv_langs.lang_map[member]}')
+        target_lang_idx = input('目標語言： ')
+        if target_lang_idx.isdigit():
+            target_lang_idx = int(target_lang_idx)
+            if (target_lang_idx > 0) and (target_lang_idx < len(possible_out) + 1):
+                break
         print('\n請輸入正確選項\n')
     target_lang = cli_param.conv_langs.lang_key[target_lang_idx - 1]
-    
+
     opt_lang = f'{ori_lang}2{target_lang}.json'
     try:
         opencc_converter(file_path, opt_lang)
