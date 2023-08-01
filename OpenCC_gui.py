@@ -91,7 +91,7 @@ class openCCgui(ctk.CTk):
         self._isLocalFileVar = ctk.IntVar(value=1)
         self.selfile_radio = ctk.CTkRadioButton(self, text='目標檔案：', font=param.fonts, value=1, variable=self._isLocalFileVar, command=self.switch_srcRadbtn)
         self.selfile_radio.grid(row=1, column=0, padx=(40,10), pady=(10,10), sticky='e')
-        self.txtbox_radio = ctk.CTkRadioButton(self, text='目標文字：', font=param.fonts, value=0, variable=self._isLocalFileVar, command=self.switch_srcRadbtn)
+        self.txtbox_radio = ctk.CTkRadioButton(self, text='目標文本：', font=param.fonts, value=0, variable=self._isLocalFileVar, command=self.switch_srcRadbtn)
         self.txtbox_radio.grid(row=2, column=0, padx=(40,10), pady=(10,10), sticky='e')
 
         self.selbtn = ctk.CTkButton(self, text='選擇檔案', command=self.file_select, font=param.fonts)
