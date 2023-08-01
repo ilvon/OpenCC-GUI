@@ -1,0 +1,6 @@
+test
+build
+*.ico
+*.exe 
+*.spec
+.venv
