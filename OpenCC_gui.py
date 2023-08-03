@@ -160,10 +160,11 @@ class opencc_converter:
         conv = opencc.OpenCC(lang_json)
         for file in src_files:
             out_name = osp.splitext(file)[0] + '_converted' + osp.splitext(file)[1]
-            with open(file, 'rb') as fin, open(out_name, 'w', encoding='utf-8') as fout:
+            with open(file, 'rb') as fin, open(out_name, 'w', encoding='UTF-8') as fout:
                 content = fin.read()
-                dectecting = chardet.detect(content)
-                decoded_text = content.decode(dectecting['encoding'])
+                dectecting = chardet.detect(content)['encoding']
+                encoding_type = 'GB18030' if (dectecting == 'GB2312' or dectecting == 'GBK') else dectecting
+                decoded_text = content.decode(encoding_type, errors='replace')
                 for line in decoded_text.splitlines():
                     fout.write(conv.convert(line) + '\n')
         msgBox.completion('通知', '已完成轉換所有檔案') 
