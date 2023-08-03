@@ -1,7 +1,7 @@
 # OpenCC-GUI
 GUI implementation of [OpenCC](https://github.com/BYVoid/OpenCC)
 
-![gui](https://github.com/thisObedience/OpenCC-GUI/assets/76443690/ce3e76d8-d5cd-4828-a9b7-79422c50ed4d)
+![gui](https://github.com/thisObedience/OpenCC-GUI/assets/76443690/cdd39e21-d1bc-4635-ae88-e1c6b06d15a4)
 
 CLI implementation: 
 
