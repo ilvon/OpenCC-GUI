@@ -45,7 +45,11 @@ def opencc_CLI():
             file_path = askopenfilenames(title='請選擇檔案', filetypes=cli_param.fformat)
         if file_path != '':
             break
-        print('請選擇檔案')
+        exit_opt = input('退出程式 (y/n): ')
+        if exit_opt == 'y' or exit_opt == 'Y':
+            sys.exit()
+        else:
+            print('請選擇檔案')
     
     while True:
         for i, opt in enumerate(cli_param.conv_langs.lang_key[:5]):
