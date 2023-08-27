@@ -27,7 +27,10 @@ class cli_param():
 def opencc_converter(src_files, lang_json):       
     conv = opencc.OpenCC(lang_json)
     for file in src_files:
-        out_name = osp.splitext(file)[0] + '_converted' + osp.splitext(file)[1]
+        conv_name = osp.splitext(osp.basename(file))
+        out_name = conv.convert(conv_name[0]) + '_converted' + conv_name[1]
+        out_name = osp.join(osp.dirname(file), out_name)
+        # out_name = osp.splitext(file)[0] + '_converted' + osp.splitext(file)[1]
         with open(file, 'rb') as fin, open(out_name, 'w', encoding='utf-8') as fout:
             content = fin.read()
             dectecting = chardet.detect(content)
@@ -43,7 +46,12 @@ def opencc_CLI():
             file_path = askopenfilenames(title='請選擇檔案', filetypes=cli_param.fformat)
         if file_path != '':
             break
-        print('請選擇檔案')
+        exit_opt = input('退出程式 (y/n): ')
+        if exit_opt == 'y' or exit_opt == 'Y':
+            sys.exit()
+        else:
+            print('請選擇檔案')
+        
     
     while True:
         for i, opt in enumerate(cli_param.conv_langs.lang_key[:5]):
