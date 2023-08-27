@@ -27,7 +27,9 @@ class cli_param():
 def opencc_converter(src_files, lang_json):       
     conv = opencc.OpenCC(lang_json)
     for file in src_files:
-        out_name = osp.splitext(file)[0] + '_converted' + osp.splitext(file)[1]
+        conv_name = osp.splitext(osp.basename(file))
+        out_name = conv.convert(conv_name[0]) + '_converted' + conv_name[1]
+        out_name = osp.join(osp.dirname(file), out_name)
         with open(file, 'rb') as fin, open(out_name, 'w', encoding='utf-8') as fout:
             content = fin.read()
             dectecting = chardet.detect(content)
