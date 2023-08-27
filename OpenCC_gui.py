@@ -147,6 +147,8 @@ class openCCgui(ctk.CTk):
                     outtext = opencc_converter.text_converter(self.txtbox.get('1.0', ctk.END), param.trans_json)
                     self.txtbox.delete('1.0', ctk.END)
                     self.txtbox.insert(ctk.END, outtext)
+                    self.clipboard_clear()
+                    self.clipboard_append(outtext)
             except:
                 msgBox.show_error('錯誤', '檔案轉換錯誤')
                 
