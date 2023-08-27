@@ -15,4 +15,4 @@ CLI implementation:
 ## Remarks
 - executables from [Release](https://github.com/thisObedience/OpenCC-GUI/releases) are built with Pyinstaller 5.13.1 + Python 3.11.2
 - all resulting files will be placed as same folder of the source files with suffix `_converted`
-- translated result from textbox will be automatically copied to windows clipboard
+- translation result from textbox will be automatically copied to windows clipboard
