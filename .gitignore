@@ -1,6 +1,7 @@
-test
+release
 build
 *.ico
 *.exe 
 *.spec
-.venv
+opcvenv
+*.ps1

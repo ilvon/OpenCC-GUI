@@ -6,7 +6,7 @@ from CTkMessagebox import CTkMessagebox
 import opencc
 
 class param():
-    title = 'OpenCC v1.1.6 GUI'
+    title = 'OpenCC v1.1.7 GUI'
     win_width, win_height = 430, 500
     color_theme = 'blue'
     app_mode = 'dark'
