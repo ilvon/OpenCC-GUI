@@ -1,9 +1,7 @@
-import os.path as osp
+import os, chardet, opencc
 import tkinter.filedialog as tkf
-import chardet
 import customtkinter as ctk
 from CTkMessagebox import CTkMessagebox
-import opencc
 
 class param():
     main_title = 'OpenCC v1.1.7 GUI'
@@ -14,7 +12,7 @@ class param():
     rad_fonts = ('Microsoft JhengHei UI', 13)
     # gui_icon = 'conv.ico'
     file_paths = []
-    trans_json = ''
+    translation_json = ''
     file_formats = (('All','*.*'), ('Text-based', '*.txt;*.csv;*.html;*.json;*.xml;*.cfg;*.ini;*.md;*.log;*.yaml'),
                ('Subtitle','*.srt;*.ass;*.sub;*.vtt;*.lrc'))
     
@@ -42,13 +40,13 @@ class msgBox():
         CTkMessagebox(width=300, height=150, title=win_title, message=msg, icon='check', font=param.fonts)
 
 class radBtn_frame(ctk.CTkFrame):
-    def __init__(self, master, title, radioTitle, font, ini_state):
+    def __init__(self, master, title, radioTitle, font, init_state):
         super().__init__(master)
         self.grid_columnconfigure(0, weight=1)
         self.values = radioTitle
         self.title = title
         self.fonts = font
-        self.status = ini_state
+        self.status = init_state
         self.radiobuttons = []
         self.variable = ctk.StringVar(value="")
         self.radBtnDICT = {}
@@ -70,7 +68,7 @@ class radBtn_frame(ctk.CTkFrame):
     def rad_action(self):
         _is_choosing_destlang_ = False if self.title._text == '原有語言' else True
         ava_options = getattr(param.lang_combination, self.get())[int(_is_choosing_destlang_)]
-        self.master.off_radbtn(_is_choosing_destlang_, ava_options) # do nothing if clicking destlang_radBtn
+        self.master.switch_radBtn(_is_choosing_destlang_, ava_options) # do nothing if clicking destlang_radBtn
              
 class openCCgui(ctk.CTk):
     def __init__(self):
@@ -84,9 +82,9 @@ class openCCgui(ctk.CTk):
         self.grid_columnconfigure((0,1), weight=1, minsize=200)
         self.grid_rowconfigure((0,1,2,3), weight=1)
         
-        self.srclang_radframe = radBtn_frame(self, title=param.radlist.src_title, radioTitle=param.radlist.src_lang, font=param.rad_fonts, ini_state='normal')
+        self.srclang_radframe = radBtn_frame(self, title=param.radlist.src_title, radioTitle=param.radlist.src_lang, font=param.rad_fonts, init_state='normal')
         self.srclang_radframe.grid(row=0, column=0, padx=(10,10), pady=(10,10), sticky='nsew')
-        self.destlang_radframe = radBtn_frame(self, title=param.radlist.dest_title, radioTitle=param.radlist.dest_lang, font=param.rad_fonts, ini_state='disabled')
+        self.destlang_radframe = radBtn_frame(self, title=param.radlist.dest_title, radioTitle=param.radlist.dest_lang, font=param.rad_fonts, init_state='disabled')
         self.destlang_radframe.grid(row=0, column=1, padx=(10,10), pady=(10,10), sticky='nsew')
         
         self._is_convert_from_file_ = ctk.IntVar(value=1)
@@ -106,8 +104,8 @@ class openCCgui(ctk.CTk):
         
         self.mainloop()
     
-    def off_radbtn(self, selecting_destlang, opt_list): # do nothing if 
-        if selecting_destlang == False:   # src lang
+    def switch_radBtn(self, selecting_destlang, opt_list):
+        if selecting_destlang == False:
             invalid_lang_set = set(param.radlist.lang_abbrev) - set(opt_list)
             selected_destlang = self.destlang_radframe.get()
             for opt in opt_list:
@@ -139,13 +137,13 @@ class openCCgui(ctk.CTk):
         return json_name + '.json'
         
     def submit(self):
-        param.trans_json = self.chk_selection(f'{self.srclang_radframe.get()}2{self.destlang_radframe.get()}')
-        if(param.trans_json != None):
+        param.translation_json = self.chk_selection(f'{self.srclang_radframe.get()}2{self.destlang_radframe.get()}')
+        if(param.translation_json != None):
             try:
                 if self._is_convert_from_file_.get():
-                    opencc_converter.file_converter(param.file_paths, param.trans_json)
+                    opencc_converter.file_converter(param.file_paths, param.translation_json)
                 else:
-                    outtext = opencc_converter.text_converter(self.textbox.get('1.0', ctk.END), param.trans_json)
+                    outtext = opencc_converter.text_converter(self.textbox.get('1.0', ctk.END), param.translation_json)
                     self.textbox.delete('1.0', ctk.END)
                     self.textbox.insert(ctk.END, outtext)
                     self.clipboard_clear()
@@ -162,10 +160,10 @@ class opencc_converter:
     def file_converter(src_files, lang_json):       
         conv = opencc.OpenCC(lang_json)
         for file in src_files:
-            conv_name = osp.splitext(osp.basename(file))
-            out_name = conv.convert(conv_name[0]) + '_converted' + conv_name[1]
-            out_name =  osp.join(osp.dirname(file), out_name)
-            with open(file, 'rb') as fin, open(out_name, 'w', encoding='UTF-8') as fout:
+            target = os.path.splitext(os.path.basename(file))
+            output_filename = conv.convert(target[0]) + '_converted' + target[1]
+            output_filename =  os.path.join(os.path.dirname(file), output_filename)
+            with open(file, 'rb') as fin, open(output_filename, 'w', encoding='UTF-8') as fout:
                 content = fin.read()
                 dectecting = chardet.detect(content)['encoding']
                 encoding_type = 'GB18030' if (dectecting == 'GB2312' or dectecting == 'GBK') else dectecting
