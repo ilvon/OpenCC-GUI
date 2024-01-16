@@ -6,16 +6,16 @@ from CTkMessagebox import CTkMessagebox
 import opencc
 
 class param():
-    title = 'OpenCC v1.1.7 GUI'
+    main_title = 'OpenCC v1.1.7 GUI'
     win_width, win_height = 430, 500
     color_theme = 'blue'
     app_mode = 'dark'
     fonts = ('Microsoft JhengHei UI', 13)
     rad_fonts = ('Microsoft JhengHei UI', 13)
     # gui_icon = 'conv.ico'
-    fpath = []
+    file_paths = []
     trans_json = ''
-    fformat = (('All','*.*'), ('Text-based', '*.txt;*.csv;*.html;*.json;*.xml;*.cfg;*.ini;*.md;*.log;*.yaml'),
+    file_formats = (('All','*.*'), ('Text-based', '*.txt;*.csv;*.html;*.json;*.xml;*.cfg;*.ini;*.md;*.log;*.yaml'),
                ('Subtitle','*.srt;*.ass;*.sub;*.vtt;*.lrc'))
     
     class radlist():
@@ -23,8 +23,8 @@ class param():
         src_lang = ['簡體','繁體','臺灣繁體','香港繁體','日本漢字 (Kanji)']
         dest_title = '目標語言'
         dest_lang = src_lang + ['簡體 (中國大陸常用詞彙)', '繁體 (臺灣常用詞彙)']
-        lang_sym = ['s', 't', 'tw', 'hk', 'jp', 'sp', 'twp']
-    class lang_comb():  # [src_lang], [target_lang]        
+        lang_abbrev = ['s', 't', 'tw', 'hk', 'jp', 'sp', 'twp']
+    class lang_combination():  # [src_lang], [target_lang]        
         s = [['t','tw','hk','twp'], ['t','tw','hk']]
         t = [['s','tw','hk','jp'], ['s','tw','hk','jp']]
         tw = [['s','t','sp'], ['s','t']]
@@ -51,15 +51,16 @@ class radBtn_frame(ctk.CTkFrame):
         self.status = ini_state
         self.radiobuttons = []
         self.variable = ctk.StringVar(value="")
-        self.btndict = {}
+        self.radBtnDICT = {}
         
         self.title = ctk.CTkLabel(self, text=self.title, fg_color="gray30", corner_radius=6, font=self.fonts)
         self.title.grid(row=0, column=0, padx=10, pady=(10, 0), sticky='nsew')
         for i, value in enumerate(self.values):
-            radiobutton = ctk.CTkRadioButton(self, text=value, value=param.radlist.lang_sym[i], variable=self.variable, font=self.fonts, command=self.rad_action, state=self.status)
+            radiobutton = ctk.CTkRadioButton(self, text=value, value=param.radlist.lang_abbrev[i], variable=self.variable, font=self.fonts, command=self.rad_action, state=self.status)
             radiobutton.grid(row=i + 1, column=0, padx=10, pady=(10, 0), sticky="w")
             self.radiobuttons.append(radiobutton)
-            self.btndict[param.radlist.lang_sym[i]] = radiobutton
+            self.radBtnDICT[param.radlist.lang_abbrev[i]] = radiobutton
+        pass
             
     def get(self):
         return self.variable.get()
@@ -67,95 +68,95 @@ class radBtn_frame(ctk.CTkFrame):
         self.variable.set(value)
     
     def rad_action(self):
-        rad_list_side = 0 if self.title.cget('text')=='原有語言' else 1
-        ava_opts = getattr(param.lang_comb, self.get())[rad_list_side]
-        self.master.off_radbtn(rad_list_side, ava_opts)
+        _is_choosing_destlang_ = False if self.title._text == '原有語言' else True
+        ava_options = getattr(param.lang_combination, self.get())[int(_is_choosing_destlang_)]
+        self.master.off_radbtn(_is_choosing_destlang_, ava_options) # do nothing if clicking destlang_radBtn
              
 class openCCgui(ctk.CTk):
     def __init__(self):
         super().__init__()
         ctk.set_default_color_theme(param.color_theme)
         ctk.set_appearance_mode(param.app_mode)
-        self.title(param.title)
+        self.title(param.main_title)
         # self.iconbitmap(param.gui_icon)
         self.geometry(f'{param.win_width}x{param.win_height}')
         self.resizable(False, False)
         self.grid_columnconfigure((0,1), weight=1, minsize=200)
         self.grid_rowconfigure((0,1,2,3), weight=1)
         
-        self.radio_srcf = radBtn_frame(self, title=param.radlist.src_title, radioTitle=param.radlist.src_lang, font=param.rad_fonts, ini_state='normal')
-        self.radio_srcf.grid(row=0, column=0, padx=(10,10), pady=(10,10), sticky='nsew')
-        self.radio_desf = radBtn_frame(self, title=param.radlist.dest_title, radioTitle=param.radlist.dest_lang, font=param.rad_fonts, ini_state='disabled')
-        self.radio_desf.grid(row=0, column=1, padx=(10,10), pady=(10,10), sticky='nsew')
+        self.srclang_radframe = radBtn_frame(self, title=param.radlist.src_title, radioTitle=param.radlist.src_lang, font=param.rad_fonts, ini_state='normal')
+        self.srclang_radframe.grid(row=0, column=0, padx=(10,10), pady=(10,10), sticky='nsew')
+        self.destlang_radframe = radBtn_frame(self, title=param.radlist.dest_title, radioTitle=param.radlist.dest_lang, font=param.rad_fonts, ini_state='disabled')
+        self.destlang_radframe.grid(row=0, column=1, padx=(10,10), pady=(10,10), sticky='nsew')
         
-        self._isLocalFileVar = ctk.IntVar(value=1)
-        self.selfile_radio = ctk.CTkRadioButton(self, text='目標檔案：', font=param.fonts, value=1, variable=self._isLocalFileVar, command=self.switch_srcRadbtn)
-        self.selfile_radio.grid(row=1, column=0, padx=(40,10), pady=(10,10), sticky='e')
-        self.txtbox_radio = ctk.CTkRadioButton(self, text='目標文本：', font=param.fonts, value=0, variable=self._isLocalFileVar, command=self.switch_srcRadbtn)
-        self.txtbox_radio.grid(row=2, column=0, padx=(40,10), pady=(10,10), sticky='e')
+        self._is_convert_from_file_ = ctk.IntVar(value=1)
+        self.fileSelection_radBtn = ctk.CTkRadioButton(self, text='目標檔案：', font=param.fonts, value=1, variable=self._is_convert_from_file_, command=self.switch_srcRadbtn)
+        self.fileSelection_radBtn.grid(row=1, column=0, padx=(40,10), pady=(10,10), sticky='e')
+        self.textbox_radBtn = ctk.CTkRadioButton(self, text='目標文本：', font=param.fonts, value=0, variable=self._is_convert_from_file_, command=self.switch_srcRadbtn)
+        self.textbox_radBtn.grid(row=2, column=0, padx=(40,10), pady=(10,10), sticky='e')
 
-        self.selbtn = ctk.CTkButton(self, text='選擇檔案', command=self.file_select, font=param.fonts)
-        self.selbtn.grid(row=1, column=1, padx=(40,25), pady=(0,0), sticky='w')
+        self.fileSelectBtn = ctk.CTkButton(self, text='選擇檔案', command=self.file_select, font=param.fonts)
+        self.fileSelectBtn.grid(row=1, column=1, padx=(40,25), pady=(0,0), sticky='w')
         
-        self.txtbox = ctk.CTkTextbox(self, height=120, width=220, font=param.fonts, state='disabled')
-        self.txtbox.grid(row=2, column=1, padx=(0,10), pady=(0,0), sticky='w')
+        self.textbox = ctk.CTkTextbox(self, height=120, width=220, font=param.fonts, state='disabled')
+        self.textbox.grid(row=2, column=1, padx=(0,10), pady=(0,0), sticky='w')
         
-        self.covbtn = ctk.CTkButton(self, text='開始轉換', command=self.submit, font=param.fonts)
-        self.covbtn.grid(row=3, column=0, padx=(100,100), pady=(10,10), sticky='ew', columnspan=2)
+        self.convertBtn = ctk.CTkButton(self, text='開始轉換', command=self.submit, font=param.fonts)
+        self.convertBtn.grid(row=3, column=0, padx=(100,100), pady=(10,10), sticky='ew', columnspan=2)
         
         self.mainloop()
     
-    def off_radbtn(self, side, opt_list):
-        not_ava_set = set(param.radlist.lang_sym) - set(opt_list)
-        on_deslang = self.radio_desf.get()
-        if side == 0:   # src lang
+    def off_radbtn(self, selecting_destlang, opt_list): # do nothing if 
+        if selecting_destlang == False:   # src lang
+            invalid_lang_set = set(param.radlist.lang_abbrev) - set(opt_list)
+            selected_destlang = self.destlang_radframe.get()
             for opt in opt_list:
-                self.radio_desf.btndict[f'{opt}'].configure(state='normal')
-            for nopt in not_ava_set:
-                self.radio_desf.btndict[f'{nopt}'].configure(state='disabled')
-            if on_deslang != '':
-                self.radio_desf.btndict[f'{on_deslang}'].deselect()
+                self.destlang_radframe.radBtnDICT[f'{opt}'].configure(state='normal')
+            for nopt in invalid_lang_set:
+                self.destlang_radframe.radBtnDICT[f'{nopt}'].configure(state='disabled')
+            if selected_destlang != '':
+                self.destlang_radframe.radBtnDICT[f'{selected_destlang}'].deselect()
     
     def switch_srcRadbtn(self):
-        if self._isLocalFileVar.get():
-            self.txtbox.delete('1.0', ctk.END)
-            self.txtbox.configure(state='disabled')
-            self.selbtn.configure(state='normal')
+        if self._is_convert_from_file_.get():
+            self.textbox.delete('1.0', ctk.END)
+            self.textbox.configure(state='disabled')
+            self.fileSelectBtn.configure(state='normal')
         else:
-            self.selbtn.configure(state='disabled', text='選擇檔案')
-            self.txtbox.configure(state='normal')
+            self.fileSelectBtn.configure(state='disabled', text='選擇檔案')
+            self.textbox.configure(state='normal')
     
     def chk_selection(self, json_name):
-        if json_name not in param.lang_comb.name:
+        if json_name not in param.lang_combination.name:
             msgBox.show_error('錯誤', '請選擇語言')
             return None
-        if (len(param.fpath) == 0 and self._isLocalFileVar.get()):
+        if (len(param.file_paths) == 0 and self._is_convert_from_file_.get()):
             msgBox.show_error('錯誤', '請選擇檔案')
             return None
-        if (not self._isLocalFileVar.get() and len(self.txtbox.get('1.0', ctk.END)) < 2):
+        if (not self._is_convert_from_file_.get() and len(self.textbox.get('1.0', ctk.END)) < 2):
             msgBox.show_error('錯誤', '請輸入文字')
             return None
         return json_name + '.json'
         
     def submit(self):
-        param.trans_json = self.chk_selection(f'{self.radio_srcf.get()}2{self.radio_desf.get()}')
+        param.trans_json = self.chk_selection(f'{self.srclang_radframe.get()}2{self.destlang_radframe.get()}')
         if(param.trans_json != None):
             try:
-                if self._isLocalFileVar.get():
-                    opencc_converter.file_converter(param.fpath, param.trans_json)
+                if self._is_convert_from_file_.get():
+                    opencc_converter.file_converter(param.file_paths, param.trans_json)
                 else:
-                    outtext = opencc_converter.text_converter(self.txtbox.get('1.0', ctk.END), param.trans_json)
-                    self.txtbox.delete('1.0', ctk.END)
-                    self.txtbox.insert(ctk.END, outtext)
+                    outtext = opencc_converter.text_converter(self.textbox.get('1.0', ctk.END), param.trans_json)
+                    self.textbox.delete('1.0', ctk.END)
+                    self.textbox.insert(ctk.END, outtext)
                     self.clipboard_clear()
                     self.clipboard_append(outtext)
             except:
                 msgBox.show_error('錯誤', '檔案轉換錯誤')
                 
     def file_select(self):
-        param.fpath = tkf.askopenfilenames(title='請選擇檔案', filetypes=param.fformat)
-        f_no = len(param.fpath)
-        self.selbtn.configure(text=f'已選擇檔案：{f_no}')
+        param.file_paths = tkf.askopenfilenames(title='請選擇檔案', filetypes=param.file_formats)
+        file_count = len(param.file_paths)
+        self.fileSelectBtn.configure(text=f'已選擇檔案：{file_count}')
                 
 class opencc_converter:
     def file_converter(src_files, lang_json):       
