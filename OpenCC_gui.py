@@ -69,7 +69,29 @@ class radBtn_frame(ctk.CTkFrame):
         _is_choosing_destlang_ = False if self.title._text == '原有語言' else True
         ava_options = getattr(param.lang_combination, self.get())[int(_is_choosing_destlang_)]
         self.master.switch_radBtn(_is_choosing_destlang_, ava_options) # do nothing if clicking destlang_radBtn
-             
+  
+class textbox_result_window():
+    def __init__(self, master, srctext):
+        self.master_win = master
+        self.new_win = ctk.CTkToplevel()  
+        self.new_win.title('轉換結果') 
+        self.new_win.resizable(False, False)               
+        self.new_win.geometry('380x450')
+        self.converted_str = opencc_converter.text_converter(srctext, param.translation_json)
+        
+        self.printout = ctk.CTkTextbox(self.new_win, width=360, height=390, font=param.fonts, state='normal')
+        self.printout.insert('1.0', text=self.converted_str)
+        self.printout.configure(state='disabled')
+        self.printout.pack(padx=(10,10), pady=(10,0))
+        
+        self.copyBtn = ctk.CTkButton(self.new_win, text='複製', command=self.copy_text, font=param.fonts)
+        self.copyBtn.pack(pady=(10,10))
+        
+    def copy_text(self):
+        self.new_win.clipboard_clear()
+        self.new_win.clipboard_append(self.converted_str)
+        self.master_win.result_window.new_win.destroy()
+                  
 class openCCgui(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -101,6 +123,7 @@ class openCCgui(ctk.CTk):
         
         self.convertBtn = ctk.CTkButton(self, text='開始轉換', command=self.submit, font=param.fonts)
         self.convertBtn.grid(row=3, column=0, padx=(100,100), pady=(10,10), sticky='ew', columnspan=2)
+        self.result_window = None
         
         self.mainloop()
     
@@ -143,11 +166,9 @@ class openCCgui(ctk.CTk):
                 if self._is_convert_from_file_.get():
                     opencc_converter.file_converter(param.file_paths, param.translation_json)
                 else:
-                    outtext = opencc_converter.text_converter(self.textbox.get('1.0', ctk.END), param.translation_json)
-                    self.textbox.delete('1.0', ctk.END)
-                    self.textbox.insert(ctk.END, outtext)
-                    self.clipboard_clear()
-                    self.clipboard_append(outtext)
+                    if self.result_window is not None and self.result_window.new_win.winfo_exists():
+                        self.result_window.new_win.destroy()
+                    self.result_window = textbox_result_window(self, self.textbox.get('1.0', ctk.END))   
             except:
                 msgBox.show_error('錯誤', '檔案轉換錯誤')
                 
