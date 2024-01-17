@@ -1,12 +1,12 @@
 # OpenCC-GUI
-![VERSION](https://img.shields.io/badge/v1.0.4-0047AB)
+![VERSION](https://img.shields.io/badge/v1.1.0-0047AB)
 ![PYTHON](https://img.shields.io/badge/Python-3.11.2-green)
 ![OPENCC](https://img.shields.io/badge/OpenCC-1.1.7-green)
 ![CTK](https://img.shields.io/badge/customtkinter-5.2.1-green)
 
 GUI implementation of [OpenCC](https://github.com/BYVoid/OpenCC)
 
-![gui](https://github.com/thisObedience/OpenCC-GUI/assets/76443690/cdd39e21-d1bc-4635-ae88-e1c6b06d15a4)
+![gui](release/opcgui1.1.0.png)
 
 CLI implementation: 
 
