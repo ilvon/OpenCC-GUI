@@ -6,7 +6,7 @@
 
 GUI implementation of [OpenCC](https://github.com/BYVoid/OpenCC)
 
-![gui](release/opcgui1.1.0.png)
+![gui](https://github.com/ilvon/OpenCC-GUI/assets/76443690/e3afebb3-2842-437e-b180-c85b82958655)
 
 CLI implementation: 
 
