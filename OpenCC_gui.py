@@ -160,11 +160,13 @@ class openCCgui(ctk.CTk):
         return json_name + '.json'
         
     def submit(self):
-        param.translation_json = self.chk_selection(f'{self.srclang_radframe.get()}2{self.destlang_radframe.get()}')
+        target_language_abbrev = self.destlang_radframe.get()
+        target_language_suffix = param.radlist.dest_lang[param.radlist.lang_abbrev.index(target_language_abbrev)]
+        param.translation_json = self.chk_selection(f'{self.srclang_radframe.get()}2{target_language_abbrev}')
         if(param.translation_json != None):
             try:
                 if self._is_convert_from_file_.get():
-                    opencc_converter.file_converter(param.file_paths, param.translation_json)
+                    opencc_converter.file_converter(param.file_paths, param.translation_json, target_language_suffix)
                 else:
                     if self.result_window is not None and self.result_window.new_win.winfo_exists():
                         self.result_window.new_win.destroy()
@@ -178,11 +180,11 @@ class openCCgui(ctk.CTk):
         self.fileSelectBtn.configure(text=f'已選擇檔案：{file_count}')
                 
 class opencc_converter:
-    def file_converter(src_files, lang_json):       
+    def file_converter(src_files, lang_json, file_suffix):       
         conv = opencc.OpenCC(lang_json)
         for file in src_files:
             target = os.path.splitext(os.path.basename(file))
-            output_filename = conv.convert(target[0]) + '_converted' + target[1]
+            output_filename = conv.convert(target[0]) + f'_{file_suffix}{target[1]}'
             output_filename =  os.path.join(os.path.dirname(file), output_filename)
             with open(file, 'rb') as fin, open(output_filename, 'w', encoding='UTF-8') as fout:
                 content = fin.read()
