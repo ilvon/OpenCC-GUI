@@ -9,11 +9,11 @@ GUI implementation of [OpenCC](https://github.com/BYVoid/OpenCC)
 
 ![gui](https://github.com/ilvon/OpenCC-GUI/assets/76443690/e3afebb3-2842-437e-b180-c85b82958655)
 
-CLI implementation: 
+CLI implementation:
 
 ![cli](https://github.com/thisObedience/OpenCC-GUI/assets/76443690/7334843f-42dd-4dbe-ba5d-d36bca8fb9de)
 
 ## Remarks
 
 - executables from [Release](https://github.com/thisObedience/OpenCC-GUI/releases) are built with Pyinstaller 6.2.0 + Python 3.11.2
-- all resulting files will be placed as same folder of the source files with suffix `_converted`
+- all resulting files will be placed as same folder of the source files with suffix `_<target_language>` (e.g. `_简体`, `_繁體`)
