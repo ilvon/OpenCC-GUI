@@ -161,7 +161,8 @@ class openCCgui(ctk.CTk):
         
     def submit(self):
         target_language_abbrev = self.destlang_radframe.get()
-        target_language_suffix = param.radlist.dest_lang[param.radlist.lang_abbrev.index(target_language_abbrev)]
+        if target_language_abbrev:
+            target_language_suffix = param.radlist.dest_lang[param.radlist.lang_abbrev.index(target_language_abbrev)]
         param.translation_json = self.chk_selection(f'{self.srclang_radframe.get()}2{target_language_abbrev}')
         if(param.translation_json != None):
             try:
