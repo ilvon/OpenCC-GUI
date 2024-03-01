@@ -1,7 +1,8 @@
-import os, chardet, opencc
+import os, chardet, opencc, sys
 import tkinter.filedialog as tkf
 import customtkinter as ctk
 from CTkMessagebox import CTkMessagebox
+from PIL import Image
 
 class param():
     main_title = 'OpenCC v1.1.7 GUI'
@@ -10,7 +11,7 @@ class param():
     app_mode = 'dark'
     fonts = ('Microsoft JhengHei UI', 13, 'bold')
     rad_fonts = ('Microsoft JhengHei UI', 13, 'bold')
-    # gui_icon = 'conv.ico'
+    gui_icon = 'conv.ico'
     file_paths = []
     translation_json = ''
     file_formats = (('All','*.*'), ('Text-based', '*.txt;*.csv;*.html;*.json;*.xml;*.cfg;*.ini;*.md;*.log;*.yaml'),
@@ -70,28 +71,35 @@ class radBtn_frame(ctk.CTkFrame):
         ava_options = getattr(param.lang_combination, self.get())[int(_is_choosing_destlang_)]
         self.master.switch_radBtn(_is_choosing_destlang_, ava_options) # do nothing if clicking destlang_radBtn
   
-class textbox_result_window():
+class text_convert_popup():
     def __init__(self, master, srctext):
         self.master_win = master
-        self.new_win = ctk.CTkToplevel()  
-        self.new_win.title('轉換結果') 
+        self.new_win = ctk.CTkToplevel()
+        self.new_win.title('純文字轉換') 
+        # self.new_win.iconbitmap(resource_path(param.gui_icon))
         self.new_win.resizable(False, False)               
-        self.new_win.geometry('760x450')
-        self.new_win.grid_columnconfigure((0,1), weight=1)
+        self.new_win.geometry('780x450')
+        self.new_win.grid_columnconfigure(0, weight=5)
+        self.new_win.grid_columnconfigure(1, weight=1)
+        self.new_win.grid_columnconfigure(2, weight=5)
         self.new_win.grid_rowconfigure(0, weight=1)
         self.converted_str = opencc_converter.text_converter(srctext, param.translation_json)
         
         self.original_str_textbox = ctk.CTkTextbox(self.new_win, width=360, height=390, font=param.fonts, state='normal')
-        self.original_str_textbox.grid(row=0, column=0, padx=(10,10), pady=(10,10), sticky='nsew')
+        self.original_str_textbox.grid(row=0, column=0, padx=(10,5), pady=(10,10), sticky='nsew')
         self.original_str_textbox.bind("<KeyRelease>", self.update_result)
+        
+        arrow_image = ctk.CTkImage(dark_image=Image.open(resource_path("right_arrow.png")), size=(20,20))
+        arrow_icon = ctk.CTkLabel(self.new_win, image=arrow_image, text='')
+        arrow_icon.grid(row=0, column=1)
         
         self.printout = ctk.CTkTextbox(self.new_win, width=360, height=390, font=param.fonts, state='normal')
         self.printout.insert('1.0', text=self.converted_str)
         self.printout.configure(state='disabled')
-        self.printout.grid(row=0, column=1, padx=(10,10), pady=(10,10), sticky='nsew')
+        self.printout.grid(row=0, column=2, padx=(5,10), pady=(10,10), sticky='nsew')
         
         self.copyBtn = ctk.CTkButton(self.new_win, text='複製', command=self.copy_text, font=param.fonts)
-        self.copyBtn.grid(row=1, column=0, columnspan=2, padx=(10,10) , pady=(10,10))
+        self.copyBtn.grid(row=1, column=0, columnspan=3, padx=(10,10) , pady=(10,10))
         
     def copy_text(self):
         self.new_win.clipboard_clear()
@@ -113,7 +121,7 @@ class openCCgui(ctk.CTk):
         ctk.set_default_color_theme(param.color_theme)
         ctk.set_appearance_mode(param.app_mode)
         self.title(param.main_title)
-        # self.iconbitmap(param.gui_icon)
+        self.iconphoto(resource_path(param.gui_icon))
         self.geometry(f'{param.win_width}x{param.win_height}')
         self.resizable(False, False)
         self.grid_columnconfigure((0,1), weight=1, minsize=200)
@@ -177,9 +185,9 @@ class openCCgui(ctk.CTk):
                 else:
                     if self.result_window is not None and self.result_window.new_win.winfo_exists():
                         self.result_window.new_win.destroy()
-                    self.result_window = textbox_result_window(self, '')   
-            except:
-                msgBox.show_error('錯誤', '檔案轉換錯誤')
+                    self.result_window = text_convert_popup(self, '')   
+            except Exception as err:
+                msgBox.show_error('錯誤', str(err))
                 
     def file_select(self):
         param.file_paths = tkf.askopenfilenames(title='請選擇檔案', filetypes=param.file_formats)
@@ -210,6 +218,13 @@ class opencc_converter:
         while result_text.endswith('\n'):
             result_text = result_text[:-1]
         return result_text
+    
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
     
 if __name__ == '__main__':
     main_GUI = openCCgui()
