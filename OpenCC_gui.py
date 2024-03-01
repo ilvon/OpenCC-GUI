@@ -5,7 +5,7 @@ from CTkMessagebox import CTkMessagebox
 
 class param():
     main_title = 'OpenCC v1.1.7 GUI'
-    win_width, win_height = 430, 500
+    win_width, win_height = 430, 460
     color_theme = 'blue'
     app_mode = 'dark'
     fonts = ('Microsoft JhengHei UI', 13, 'bold')
@@ -79,8 +79,7 @@ class textbox_result_window():
         self.new_win.geometry('760x450')
         self.new_win.grid_columnconfigure((0,1), weight=1)
         self.new_win.grid_rowconfigure(0, weight=1)
-        self.converted_str = opencc_converter.text_converter(srctext, param.translation_json) #! this line should be retained & uncommented
-        # self.converted_str = opencc_converter.text_converter(srctext, 't2s.json') #! debug purpose
+        self.converted_str = opencc_converter.text_converter(srctext, param.translation_json)
         
         self.original_str_textbox = ctk.CTkTextbox(self.new_win, width=360, height=390, font=param.fonts, state='normal')
         self.original_str_textbox.grid(row=0, column=0, padx=(10,10), pady=(10,10), sticky='nsew')
@@ -103,7 +102,7 @@ class textbox_result_window():
         self.printout.configure(state='normal')
         self.printout.delete('1.0', ctk.END)
         inserted_string = self.original_str_textbox.get('1.0', ctk.END)
-        converted_string = opencc_converter.text_converter(inserted_string, param.translation_json, True)
+        converted_string = opencc_converter.text_converter(inserted_string, param.translation_json)
         self.printout.insert(ctk.END, converted_string)
         self.printout.configure(state='disabled')
         
@@ -128,19 +127,15 @@ class openCCgui(ctk.CTk):
         self._is_convert_from_file_ = ctk.IntVar(value=1)
         self.fileSelection_radBtn = ctk.CTkRadioButton(self, text='目標檔案：', font=param.fonts, value=1, variable=self._is_convert_from_file_, command=self.switch_srcRadbtn)
         self.fileSelection_radBtn.grid(row=1, column=0, padx=(40,10), pady=(10,10), sticky='e')
-        self.textbox_radBtn = ctk.CTkRadioButton(self, text='目標文本：', font=param.fonts, value=0, variable=self._is_convert_from_file_, command=self.switch_srcRadbtn)
-        self.textbox_radBtn.grid(row=2, column=0, padx=(40,10), pady=(10,10), sticky='e')
+        self.textbox_radBtn = ctk.CTkRadioButton(self, text='文字轉換', font=param.fonts, value=0, variable=self._is_convert_from_file_, command=self.switch_srcRadbtn)
+        self.textbox_radBtn.grid(row=2, column=0, padx=(0,0), pady=(10,10), columnspan=2, sticky='ns')
 
         self.fileSelectBtn = ctk.CTkButton(self, text='選擇檔案', command=self.file_select, font=param.fonts)
         self.fileSelectBtn.grid(row=1, column=1, padx=(40,25), pady=(0,0), sticky='w')
         
-        self.textbox = ctk.CTkTextbox(self, height=120, width=220, font=param.fonts, state='disabled')
-        self.textbox.grid(row=2, column=1, padx=(0,10), pady=(0,0), sticky='w')
-        
         self.convertBtn = ctk.CTkButton(self, text='開始轉換', command=self.submit, font=param.fonts)
-        self.convertBtn.grid(row=3, column=0, padx=(100,100), pady=(10,10), sticky='ew', columnspan=2)
+        self.convertBtn.grid(row=3, column=0, padx=(100,100), pady=(10,20), sticky='ew', columnspan=2)
         self.result_window = None
-        # self.testwin = textbox_result_window(self, '測試') #! debug purpose
         
         self.mainloop()
     
@@ -157,12 +152,9 @@ class openCCgui(ctk.CTk):
     
     def switch_srcRadbtn(self):
         if self._is_convert_from_file_.get():
-            self.textbox.delete('1.0', ctk.END)
-            self.textbox.configure(state='disabled')
             self.fileSelectBtn.configure(state='normal')
         else:
             self.fileSelectBtn.configure(state='disabled', text='選擇檔案')
-            self.textbox.configure(state='normal')
     
     def chk_selection(self, json_name):
         if json_name not in param.lang_combination.name:
@@ -170,9 +162,6 @@ class openCCgui(ctk.CTk):
             return None
         if (len(param.file_paths) == 0 and self._is_convert_from_file_.get()):
             msgBox.show_error('錯誤', '請選擇檔案')
-            return None
-        if (not self._is_convert_from_file_.get() and len(self.textbox.get('1.0', ctk.END)) < 2):
-            msgBox.show_error('錯誤', '請輸入文字')
             return None
         return json_name + '.json'
         
@@ -188,7 +177,7 @@ class openCCgui(ctk.CTk):
                 else:
                     if self.result_window is not None and self.result_window.new_win.winfo_exists():
                         self.result_window.new_win.destroy()
-                    self.result_window = textbox_result_window(self, self.textbox.get('1.0', ctk.END))   
+                    self.result_window = textbox_result_window(self, '')   
             except:
                 msgBox.show_error('錯誤', '檔案轉換錯誤')
                 
@@ -213,15 +202,13 @@ class opencc_converter:
                     fout.write(conv.convert(line) + '\n')
         msgBox.completion('通知', '已完成轉換所有檔案') 
         
-    def text_converter(src_text, lang_json, quiet=False):
+    def text_converter(src_text, lang_json):
         conv = opencc.OpenCC(lang_json)
         result_text = ''
         for line in src_text.splitlines():
             result_text = result_text + conv.convert(line) + '\n'
         while result_text.endswith('\n'):
             result_text = result_text[:-1]
-        if not quiet:
-            msgBox.completion('通知', '已完成轉換')
         return result_text
     
 if __name__ == '__main__':
