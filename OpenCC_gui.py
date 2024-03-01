@@ -8,8 +8,8 @@ class param():
     win_width, win_height = 430, 500
     color_theme = 'blue'
     app_mode = 'dark'
-    fonts = ('Microsoft JhengHei UI', 13)
-    rad_fonts = ('Microsoft JhengHei UI', 13)
+    fonts = ('Microsoft JhengHei UI', 13, 'bold')
+    rad_fonts = ('Microsoft JhengHei UI', 13, 'bold')
     # gui_icon = 'conv.ico'
     file_paths = []
     translation_json = ''
@@ -76,21 +76,37 @@ class textbox_result_window():
         self.new_win = ctk.CTkToplevel()  
         self.new_win.title('轉換結果') 
         self.new_win.resizable(False, False)               
-        self.new_win.geometry('380x450')
-        self.converted_str = opencc_converter.text_converter(srctext, param.translation_json)
+        self.new_win.geometry('760x450')
+        self.new_win.grid_columnconfigure((0,1), weight=1)
+        self.new_win.grid_rowconfigure(0, weight=1)
+        self.converted_str = opencc_converter.text_converter(srctext, param.translation_json) #! this line should be retained & uncommented
+        # self.converted_str = opencc_converter.text_converter(srctext, 't2s.json') #! debug purpose
+        
+        self.original_str_textbox = ctk.CTkTextbox(self.new_win, width=360, height=390, font=param.fonts, state='normal')
+        self.original_str_textbox.grid(row=0, column=0, padx=(10,10), pady=(10,10), sticky='nsew')
+        self.original_str_textbox.bind("<KeyRelease>", self.update_result)
         
         self.printout = ctk.CTkTextbox(self.new_win, width=360, height=390, font=param.fonts, state='normal')
         self.printout.insert('1.0', text=self.converted_str)
         self.printout.configure(state='disabled')
-        self.printout.pack(padx=(10,10), pady=(10,0))
+        self.printout.grid(row=0, column=1, padx=(10,10), pady=(10,10), sticky='nsew')
         
         self.copyBtn = ctk.CTkButton(self.new_win, text='複製', command=self.copy_text, font=param.fonts)
-        self.copyBtn.pack(pady=(10,10))
+        self.copyBtn.grid(row=1, column=0, columnspan=2, padx=(10,10) , pady=(10,10))
         
     def copy_text(self):
         self.new_win.clipboard_clear()
-        self.new_win.clipboard_append(self.converted_str)
+        self.new_win.clipboard_append(self.printout.get('1.0', ctk.END))
         self.master_win.result_window.new_win.destroy()
+        
+    def update_result(self, _):
+        self.printout.configure(state='normal')
+        self.printout.delete('1.0', ctk.END)
+        inserted_string = self.original_str_textbox.get('1.0', ctk.END)
+        converted_string = opencc_converter.text_converter(inserted_string, param.translation_json, True)
+        self.printout.insert(ctk.END, converted_string)
+        self.printout.configure(state='disabled')
+        
                   
 class openCCgui(ctk.CTk):
     def __init__(self):
@@ -124,6 +140,7 @@ class openCCgui(ctk.CTk):
         self.convertBtn = ctk.CTkButton(self, text='開始轉換', command=self.submit, font=param.fonts)
         self.convertBtn.grid(row=3, column=0, padx=(100,100), pady=(10,10), sticky='ew', columnspan=2)
         self.result_window = None
+        # self.testwin = textbox_result_window(self, '測試') #! debug purpose
         
         self.mainloop()
     
@@ -196,14 +213,15 @@ class opencc_converter:
                     fout.write(conv.convert(line) + '\n')
         msgBox.completion('通知', '已完成轉換所有檔案') 
         
-    def text_converter(src_text, lang_json):
+    def text_converter(src_text, lang_json, quiet=False):
         conv = opencc.OpenCC(lang_json)
         result_text = ''
         for line in src_text.splitlines():
             result_text = result_text + conv.convert(line) + '\n'
         while result_text.endswith('\n'):
             result_text = result_text[:-1]
-        msgBox.completion('通知', '已完成轉換')
+        if not quiet:
+            msgBox.completion('通知', '已完成轉換')
         return result_text
     
 if __name__ == '__main__':
