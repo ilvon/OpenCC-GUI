@@ -127,7 +127,7 @@ class openCCgui(ctk.CTk):
         self._is_convert_from_file_ = ctk.IntVar(value=1)
         self.fileSelection_radBtn = ctk.CTkRadioButton(self, text='目標檔案：', font=param.fonts, value=1, variable=self._is_convert_from_file_, command=self.switch_srcRadbtn)
         self.fileSelection_radBtn.grid(row=1, column=0, padx=(40,10), pady=(10,10), sticky='e')
-        self.textbox_radBtn = ctk.CTkRadioButton(self, text='文字轉換', font=param.fonts, value=0, variable=self._is_convert_from_file_, command=self.switch_srcRadbtn)
+        self.textbox_radBtn = ctk.CTkRadioButton(self, text='純文字轉換', font=param.fonts, value=0, variable=self._is_convert_from_file_, command=self.switch_srcRadbtn)
         self.textbox_radBtn.grid(row=2, column=0, padx=(0,0), pady=(10,10), columnspan=2, sticky='ns')
 
         self.fileSelectBtn = ctk.CTkButton(self, text='選擇檔案', command=self.file_select, font=param.fonts)
