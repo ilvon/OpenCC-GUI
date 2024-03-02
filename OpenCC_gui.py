@@ -11,7 +11,7 @@ class param():
     app_mode = 'dark'
     fonts = ('Microsoft JhengHei UI', 13, 'bold')
     rad_fonts = ('Microsoft JhengHei UI', 13, 'bold')
-    gui_icon = 'conv.ico'
+    gui_icon = 'assets/favicon.ico'
     file_paths = []
     translation_json = ''
     file_formats = (('All','*.*'), ('Text-based', '*.txt;*.csv;*.html;*.json;*.xml;*.cfg;*.ini;*.md;*.log;*.yaml'),
@@ -76,7 +76,7 @@ class text_convert_popup():
         self.master_win = master
         self.new_win = ctk.CTkToplevel()
         self.new_win.title('純文字轉換') 
-        # self.new_win.iconbitmap(resource_path(param.gui_icon))
+        self.new_win.after(300, lambda: self.new_win.iconbitmap(resource_path(param.gui_icon)))
         self.new_win.resizable(False, False)               
         self.new_win.geometry('780x450')
         self.new_win.grid_columnconfigure(0, weight=5)
@@ -89,7 +89,7 @@ class text_convert_popup():
         self.original_str_textbox.grid(row=0, column=0, padx=(10,5), pady=(10,10), sticky='nsew')
         self.original_str_textbox.bind("<KeyRelease>", self.update_result)
         
-        arrow_image = ctk.CTkImage(dark_image=Image.open(resource_path("right_arrow.png")), size=(20,20))
+        arrow_image = ctk.CTkImage(dark_image=Image.open(resource_path("assets/right_arrow.png")), size=(20,20))
         arrow_icon = ctk.CTkLabel(self.new_win, image=arrow_image, text='')
         arrow_icon.grid(row=0, column=1)
         
@@ -121,7 +121,7 @@ class openCCgui(ctk.CTk):
         ctk.set_default_color_theme(param.color_theme)
         ctk.set_appearance_mode(param.app_mode)
         self.title(param.main_title)
-        self.iconphoto(resource_path(param.gui_icon))
+        self.iconbitmap(resource_path(param.gui_icon))
         self.geometry(f'{param.win_width}x{param.win_height}')
         self.resizable(False, False)
         self.grid_columnconfigure((0,1), weight=1, minsize=200)
