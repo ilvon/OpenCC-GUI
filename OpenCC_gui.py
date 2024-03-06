@@ -6,7 +6,7 @@ from PIL import Image
 
 class param():
     main_title = 'OpenCC v1.1.7 GUI'
-    win_width, win_height = 430, 460
+    win_width, win_height = 430, 485
     color_theme = 'blue'
     app_mode = 'dark'
     fonts = ('Microsoft JhengHei UI', 13, 'bold')
@@ -19,20 +19,21 @@ class param():
     
     class radlist():
         src_title = '原有語言'
-        src_lang = ['簡體','繁體','臺灣繁體','香港繁體','日本漢字 (Kanji)']
+        src_lang = ['簡體','繁體','臺灣繁體','香港繁體','日本漢字 (Kanji)', '繁體 (古籍印刷通用字)']
         dest_title = '目標語言'
         dest_lang = src_lang + ['簡體 (中國大陸常用詞彙)', '繁體 (臺灣常用詞彙)']
-        lang_abbrev = ['s', 't', 'tw', 'hk', 'jp', 'sp', 'twp']
-    class lang_combination():  # [src_lang], [target_lang]        
-        s = [['t','tw','hk','twp'], ['t','tw','hk']]
-        t = [['s','tw','hk','jp'], ['s','tw','hk','jp']]
-        tw = [['s','t','sp'], ['s','t']]
-        hk = [['s','t'], ['s','t']]
-        jp = [['t'], ['t']]
-        sp = [[], ['tw']]
-        twp = [[], ['s']]
+        lang_abbrev = ['s', 't', 'tw', 'hk', 'jp', 'g', 'sp', 'twp']
+    class lang_combination():  # [src_lang]      
+        s = ['t','tw','hk','g','twp']
+        t = ['s','tw','hk','jp']
+        tw = ['s','t','sp']
+        hk = ['s','t']
+        jp = ['t']
+        sp = []
+        twp = []
+        g = ['s']
         name = ['s2t','t2s','s2tw','tw2s','s2hk','hk2s',
-                's2twp','tw2sp','t2tw','hk2t','t2hk','t2jp','jp2t','tw2t']
+                's2twp','tw2sp','t2tw','hk2t','t2hk','t2jp','jp2t','tw2t', 's2g', 'g2s']
         
 class msgBox():
     def show_error(win_title, msg):
@@ -68,8 +69,9 @@ class radBtn_frame(ctk.CTkFrame):
     
     def rad_action(self):
         _is_choosing_destlang_ = False if self.title._text == '原有語言' else True
-        ava_options = getattr(param.lang_combination, self.get())[int(_is_choosing_destlang_)]
-        self.master.switch_radBtn(_is_choosing_destlang_, ava_options) # do nothing if clicking destlang_radBtn
+        if not _is_choosing_destlang_:
+            ava_options = getattr(param.lang_combination, self.get())
+            self.master.switch_radBtn(ava_options)
   
 class text_convert_popup():
     def __init__(self, master, srctext):
@@ -147,16 +149,15 @@ class openCCgui(ctk.CTk):
         
         self.mainloop()
     
-    def switch_radBtn(self, selecting_destlang, opt_list):
-        if selecting_destlang == False:
-            invalid_lang_set = set(param.radlist.lang_abbrev) - set(opt_list)
-            selected_destlang = self.destlang_radframe.get()
-            for opt in opt_list:
-                self.destlang_radframe.radBtnDICT[f'{opt}'].configure(state='normal')
-            for nopt in invalid_lang_set:
-                self.destlang_radframe.radBtnDICT[f'{nopt}'].configure(state='disabled')
-            if selected_destlang != '':
-                self.destlang_radframe.radBtnDICT[f'{selected_destlang}'].deselect()
+    def switch_radBtn(self, opt_list):
+        invalid_lang_set = set(param.radlist.lang_abbrev) - set(opt_list)
+        selected_destlang = self.destlang_radframe.get()
+        for opt in opt_list:
+            self.destlang_radframe.radBtnDICT[f'{opt}'].configure(state='normal')
+        for nopt in invalid_lang_set:
+            self.destlang_radframe.radBtnDICT[f'{nopt}'].configure(state='disabled')
+        if selected_destlang != '':
+            self.destlang_radframe.radBtnDICT[f'{selected_destlang}'].deselect()
     
     def switch_srcRadbtn(self):
         if self._is_convert_from_file_.get():
