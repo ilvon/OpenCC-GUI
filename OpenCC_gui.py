@@ -74,34 +74,37 @@ class radBtn_frame(ctk.CTkFrame):
             self.master.switch_radBtn(ava_options)
   
 class text_convert_popup():
-    def __init__(self, master, srctext):
+    def __init__(self, master, input_lang, output_lang):
         self.master_win = master
         self.new_win = ctk.CTkToplevel()
         self.new_win.title('純文字轉換') 
         self.new_win.after(300, lambda: self.new_win.iconbitmap(resource_path(param.gui_icon)))
         self.new_win.resizable(False, False)               
-        self.new_win.geometry('780x450')
-        self.new_win.grid_columnconfigure(0, weight=5)
+        self.new_win.geometry('780x470')
+        self.new_win.grid_columnconfigure((0,2), weight=5)
         self.new_win.grid_columnconfigure(1, weight=1)
-        self.new_win.grid_columnconfigure(2, weight=5)
-        self.new_win.grid_rowconfigure(0, weight=1)
-        self.converted_str = opencc_converter.text_converter(srctext, param.translation_json)
+        self.new_win.grid_rowconfigure((0,2), weight=1)
+        self.new_win.grid_rowconfigure(1, weight=10)
+                
+        self.srctextbox_title = ctk.CTkLabel(self.new_win, text=input_lang, fg_color="gray30", corner_radius=5, font=param.fonts)
+        self.srctextbox_title.grid(row=0, column=0, pady=(5,0))
+        self.desttextbox_title = ctk.CTkLabel(self.new_win, text=output_lang, fg_color="gray30", corner_radius=5, font=param.fonts)
+        self.desttextbox_title.grid(row=0, column=2, pady=(5,0))
         
         self.original_str_textbox = ctk.CTkTextbox(self.new_win, width=360, height=390, font=param.fonts, state='normal')
-        self.original_str_textbox.grid(row=0, column=0, padx=(10,5), pady=(10,10), sticky='nsew')
+        self.original_str_textbox.grid(row=1, column=0, padx=(10,5), pady=(5,10), sticky='nsew')
         self.original_str_textbox.bind("<KeyRelease>", self.update_result)
         
         arrow_image = ctk.CTkImage(dark_image=Image.open(resource_path("assets/right_arrow.png")), size=(20,20))
         arrow_icon = ctk.CTkLabel(self.new_win, image=arrow_image, text='')
-        arrow_icon.grid(row=0, column=1)
+        arrow_icon.grid(row=1, column=1)
         
         self.printout = ctk.CTkTextbox(self.new_win, width=360, height=390, font=param.fonts, state='normal')
-        self.printout.insert('1.0', text=self.converted_str)
         self.printout.configure(state='disabled')
-        self.printout.grid(row=0, column=2, padx=(5,10), pady=(10,10), sticky='nsew')
+        self.printout.grid(row=1, column=2, padx=(5,10), pady=(5,10), sticky='nsew')
         
         self.copyBtn = ctk.CTkButton(self.new_win, text='複製', command=self.copy_text, font=param.fonts)
-        self.copyBtn.grid(row=1, column=0, columnspan=3, padx=(10,10) , pady=(10,10))
+        self.copyBtn.grid(row=2, column=0, columnspan=3, padx=(10,10) , pady=(0,10))
         
     def copy_text(self):
         self.new_win.clipboard_clear()
@@ -137,7 +140,7 @@ class openCCgui(ctk.CTk):
         self._is_convert_from_file_ = ctk.IntVar(value=1)
         self.fileSelection_radBtn = ctk.CTkRadioButton(self, text='目標檔案：', font=param.fonts, value=1, variable=self._is_convert_from_file_, command=self.switch_srcRadbtn)
         self.fileSelection_radBtn.grid(row=1, column=0, padx=(40,10), pady=(10,10), sticky='e')
-        self.textbox_radBtn = ctk.CTkRadioButton(self, text='純文字轉換', font=param.fonts, value=0, variable=self._is_convert_from_file_, command=self.switch_srcRadbtn)
+        self.textbox_radBtn = ctk.CTkRadioButton(self, text='文字轉換', font=param.fonts, value=0, variable=self._is_convert_from_file_, command=self.switch_srcRadbtn)
         self.textbox_radBtn.grid(row=2, column=0, padx=(0,0), pady=(10,10), columnspan=2, sticky='ns')
 
         self.fileSelectBtn = ctk.CTkButton(self, text='選擇檔案', command=self.file_select, font=param.fonts)
@@ -175,8 +178,10 @@ class openCCgui(ctk.CTk):
         return json_name + '.json'
         
     def submit(self):
+        original_language_abbrev = self.srclang_radframe.get()
         target_language_abbrev = self.destlang_radframe.get()
-        if target_language_abbrev:
+        if original_language_abbrev and target_language_abbrev:
+            original_language_suffix = param.radlist.dest_lang[param.radlist.lang_abbrev.index(original_language_abbrev)]
             target_language_suffix = param.radlist.dest_lang[param.radlist.lang_abbrev.index(target_language_abbrev)]
         param.translation_json = self.chk_selection(f'{self.srclang_radframe.get()}2{target_language_abbrev}')
         if(param.translation_json != None):
@@ -186,9 +191,9 @@ class openCCgui(ctk.CTk):
                 else:
                     if self.result_window is not None and self.result_window.new_win.winfo_exists():
                         self.result_window.new_win.destroy()
-                    self.result_window = text_convert_popup(self, '')   
-            except Exception as err:
-                msgBox.show_error('錯誤', str(err))
+                    self.result_window = text_convert_popup(self, original_language_suffix, target_language_suffix)   
+            except Exception:
+                msgBox.show_error('錯誤', '檔案轉換錯誤')
                 
     def file_select(self):
         param.file_paths = tkf.askopenfilenames(title='請選擇檔案', filetypes=param.file_formats)
