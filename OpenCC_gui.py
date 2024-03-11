@@ -77,7 +77,7 @@ class text_convert_popup():
     def __init__(self, master, input_lang, output_lang):
         self.master_win = master
         self.new_win = ctk.CTkToplevel()
-        self.new_win.title('純文字轉換') 
+        self.new_win.title('文字轉換') 
         self.new_win.after(300, lambda: self.new_win.iconbitmap(resource_path(param.gui_icon)))
         self.new_win.resizable(False, False)               
         self.new_win.geometry('780x470')
