@@ -23,6 +23,7 @@ class param():
         dest_title = '目標語言'
         dest_lang = src_lang + ['簡體 (中國大陸常用詞彙)', '繁體 (臺灣常用詞彙)']
         lang_abbrev = ['s', 't', 'tw', 'hk', 'jp', 'g', 'sp', 'twp']
+        
     class lang_combination():  # [src_lang]      
         s = ['t','tw','hk','g','twp']
         t = ['s','tw','hk','jp']
@@ -36,8 +37,10 @@ class param():
                 's2twp','tw2sp','t2tw','hk2t','t2hk','t2jp','jp2t','tw2t', 's2g', 'g2s']
         
 class msgBox():
+    @staticmethod
     def show_error(win_title, msg):
         CTkMessagebox(width=300, height=150, title=win_title, message=msg, icon='cancel', font=param.fonts)
+    @staticmethod
     def completion(win_title, msg):
         CTkMessagebox(width=300, height=150, title=win_title, message=msg, icon='check', font=param.fonts)
 
@@ -201,6 +204,7 @@ class openCCgui(ctk.CTk):
         self.fileSelectBtn.configure(text=f'已選擇檔案：{file_count}')
                 
 class opencc_converter:
+    @staticmethod
     def file_converter(src_files, lang_json, file_suffix):       
         conv = opencc.OpenCC(lang_json)
         for file in src_files:
@@ -215,7 +219,8 @@ class opencc_converter:
                 for line in decoded_text.splitlines():
                     fout.write(conv.convert(line) + '\n')
         msgBox.completion('通知', '已完成轉換所有檔案') 
-        
+    
+    @staticmethod
     def text_converter(src_text, lang_json):
         conv = opencc.OpenCC(lang_json)
         result_text = ''
@@ -226,10 +231,7 @@ class opencc_converter:
         return result_text
     
 def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
     
 if __name__ == '__main__':
