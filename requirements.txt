@@ -4,4 +4,4 @@ customtkinter==5.2.2
 darkdetect==0.8.0
 OpenCC==1.1.7
 packaging==23.2
-pillow==10.2.0
+pillow==10.3.0
