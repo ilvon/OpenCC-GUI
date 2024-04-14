@@ -13,7 +13,7 @@ class param():
     rad_fonts = ('Microsoft JhengHei UI', 13, 'bold')
     gui_icon = 'assets/favicon.ico'
     file_paths = []
-    translation_json = ''
+    translation_json = None
     file_formats = (('All','*.*'), ('Text-based', '*.txt;*.csv;*.html;*.json;*.xml;*.cfg;*.ini;*.md;*.log;*.yaml'),
                ('Subtitle','*.srt;*.ass;*.sub;*.vtt;*.lrc'))
     
