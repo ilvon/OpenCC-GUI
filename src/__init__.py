@@ -1,0 +1,1 @@
+from .OpenCC_gui import openCCgui

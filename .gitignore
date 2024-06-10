@@ -1,6 +1,9 @@
-release
-build
 *.exe 
-*.spec
-opcvenv
 *.ps1
+*.spec
+OpenCC_GUI.egg-info
+build
+dist
+opcvenv
+release
+test
