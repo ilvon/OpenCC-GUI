@@ -6,13 +6,13 @@
 
 GUI implementation of [OpenCC](https://github.com/BYVoid/OpenCC) with additon of [GujiCC](https://github.com/forFudan/GujiCC)
 
-![gui](assets/OpenCC-GUI.png)
-![converionWindow](assets/OpenCC-GUI_str-convert.png)
+![gui](src/assets/OpenCC-GUI.png)
+![converionWindow](src/assets/OpenCC-GUI_str-convert.png)
 
 ## Remarks 注意事項
 
-- executables from [Release](https://github.com/ilvon/OpenCC-GUI/releases) are built with Pyinstaller 6.4.0 + Python 3.11.2
-  - 執行檔由 Pyinstaller 6.4.0 及 Python 3.11.2 編譯而成
+- executables from [Release](https://github.com/ilvon/OpenCC-GUI/releases) are built with Pyinstaller
+  - 執行檔由 Pyinstaller 編譯而成
 - additional [GujiCC](https://github.com/forFudan/GujiCC) dictionary and config files need to be copied to OpenCC's library directory when running from source
   - 在執行原始碼時，[GujiCC](https://github.com/forFudan/GujiCC)的字典及設定檔需事先複製至已安裝之OpenCC目錄中
 - encoding of files for conversion will be detected, no prior conversion (to UTF-8) is needed  
