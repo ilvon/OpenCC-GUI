@@ -9,6 +9,12 @@ GUI implementation of [OpenCC](https://github.com/BYVoid/OpenCC) with additon of
 ![gui](src/assets/OpenCC-GUI.png)
 ![converionWindow](src/assets/OpenCC-GUI_str-convert.png)
 
+## Installation 安裝
+
+```bash
+pip install OpenCC-GUI
+```
+
 ## Remarks 注意事項
 
 - executables from [Release](https://github.com/ilvon/OpenCC-GUI/releases) are built with Pyinstaller
