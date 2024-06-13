@@ -7,10 +7,9 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - "OpenCC_gui.py"
       - "requirements.txt"
       - ".github/**"
-      - "assets/**"
+      - "src/**"
   pull_request:
     branches: [ "main" ]
 
@@ -35,7 +34,7 @@ jobs:
         pip install pyinstaller
     - name: Build
       run: |            
-        pyinstaller --noconfirm --name "OpenCC_GUI" --onefile --windowed --collect-data customtkinter --collect-data opencc --collect-data CTkMessagebox --icon "./assets/favicon.ico" "OpenCC_gui.py" --add-data "./assets/right_arrow.png:assets" --add-data "./assets/favicon.ico:assets"
+        pyinstaller --noconfirm --name "OpenCC_GUI" --onefile --windowed --collect-data customtkinter --collect-data opencc --collect-data CTkMessagebox --icon "./src/assets/favicon.ico" "./src/OpenCC_gui.py" --add-data "./src/assets/right_arrow.png:assets" --add-data "./src/assets/favicon.ico:assets"
     - name: Upload executable
       uses: actions/upload-artifact@v4
       with:
