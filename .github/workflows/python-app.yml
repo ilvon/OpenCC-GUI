@@ -34,7 +34,7 @@ jobs:
         pip install pyinstaller
     - name: Build
       run: |            
-        pyinstaller --noconfirm --name "OpenCC_GUI" --onefile --windowed --collect-data customtkinter --collect-data opencc --collect-data CTkMessagebox --icon "./src/assets/favicon.ico" "./src/OpenCC_gui.py" --add-data "./src/assets/right_arrow.png:assets" --add-data "./src/assets/favicon.ico:assets"
+        pyinstaller --noconfirm --name "OpenCC_GUI" --onefile --windowed --collect-data customtkinter --collect-data opencc --collect-data CTkMessagebox --icon "./src/assets/favicon.ico" "./src/OpenCC_gui.py" --add-data "./src/assets/right_arrow.png:assets" --add-data "./src/assets/favicon.ico:assets" --add-data "./src/assets/GujiCC:assets/GujiCC"
     - name: Upload executable
       uses: actions/upload-artifact@v4
       with:
