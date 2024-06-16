@@ -13,7 +13,6 @@ class param():
     rad_fonts = ('Microsoft JhengHei UI', 13, 'bold')
     gui_icon = 'assets/favicon.ico'
     file_paths = []
-    translation_json = None
     file_formats = (('All','*.*'), ('Text-based', '*.txt;*.csv;*.html;*.json;*.xml;*.cfg;*.ini;*.md;*.log;*.yaml'),
                ('Subtitle','*.srt;*.ass;*.sub;*.vtt;*.lrc'))
     
@@ -77,9 +76,10 @@ class radBtn_frame(ctk.CTkFrame):
             self.master.switch_radBtn(ava_options)
   
 class text_convert_popup():
-    def __init__(self, master, input_lang, output_lang):
+    def __init__(self, master, opencc_instance, input_lang, output_lang):
         self.master_win = master
         self.new_win = ctk.CTkToplevel()
+        self.converter = opencc_instance
         self.new_win.title('文字轉換') 
         self.new_win.after(300, lambda: self.new_win.iconbitmap(resource_path(param.gui_icon)))
         self.new_win.resizable(False, False)               
@@ -118,7 +118,7 @@ class text_convert_popup():
         self.printout.configure(state='normal')
         self.printout.delete('1.0', ctk.END)
         inserted_string = self.original_str_textbox.get('1.0', ctk.END)
-        converted_string = opencc_converter.text_converter(inserted_string, param.translation_json)
+        converted_string = opencc_converter.text_converter(inserted_string, self.converter)
         self.printout.insert(ctk.END, converted_string)
         self.printout.configure(state='disabled')
         
@@ -186,15 +186,18 @@ class openCCgui(ctk.CTk):
         if original_language_abbrev and target_language_abbrev:
             original_language_suffix = param.radlist.dest_lang[param.radlist.lang_abbrev.index(original_language_abbrev)]
             target_language_suffix = param.radlist.dest_lang[param.radlist.lang_abbrev.index(target_language_abbrev)]
-        param.translation_json = self.chk_selection(f'{self.srclang_radframe.get()}2{target_language_abbrev}')
-        if(param.translation_json != None):
+        translation_json = self.chk_selection(f'{self.srclang_radframe.get()}2{target_language_abbrev}')
+        if translation_json == 's2g.json' or translation_json == 'g2s.json':
+            translation_json = resource_path('assets/GujiCC/' + translation_json)
+        if(translation_json != None):
             try:
+                OPENCC_INSTANCE = opencc.OpenCC(translation_json)
                 if self._is_convert_from_file_.get():
-                    opencc_converter.file_converter(param.file_paths, param.translation_json, target_language_suffix)
+                    opencc_converter.file_converter(param.file_paths, OPENCC_INSTANCE, target_language_suffix)
                 else:
                     if self.result_window is not None and self.result_window.new_win.winfo_exists():
                         self.result_window.new_win.destroy()
-                    self.result_window = text_convert_popup(self, original_language_suffix, target_language_suffix)   
+                    self.result_window = text_convert_popup(self, OPENCC_INSTANCE, original_language_suffix, target_language_suffix)
             except Exception:
                 msgBox.show_error('錯誤', '檔案轉換錯誤')
                 
@@ -205,11 +208,10 @@ class openCCgui(ctk.CTk):
                 
 class opencc_converter:
     @staticmethod
-    def file_converter(src_files, lang_json, file_suffix):       
-        conv = opencc.OpenCC(lang_json)
+    def file_converter(src_files, converter_inst, file_suffix):       
         for file in src_files:
             target = os.path.splitext(os.path.basename(file))
-            output_filename = conv.convert(target[0]) + f'_{file_suffix}{target[1]}'
+            output_filename = converter_inst.convert(target[0]) + f'_{file_suffix}{target[1]}'
             output_filename =  os.path.join(os.path.dirname(file), output_filename)
             with open(file, 'rb') as fin, open(output_filename, 'w', encoding='UTF-8') as fout:
                 content = fin.read()
@@ -217,15 +219,14 @@ class opencc_converter:
                 encoding_type = 'GB18030' if (dectecting == 'GB2312' or dectecting == 'GBK') else dectecting
                 decoded_text = content.decode(encoding_type, errors='replace')
                 for line in decoded_text.splitlines():
-                    fout.write(conv.convert(line) + '\n')
+                    fout.write(converter_inst.convert(line) + '\n')
         msgBox.completion('通知', '已完成轉換所有檔案') 
     
     @staticmethod
-    def text_converter(src_text, lang_json):
-        conv = opencc.OpenCC(lang_json)
+    def text_converter(src_text, converter_inst):
         result_text = ''
         for line in src_text.splitlines():
-            result_text = result_text + conv.convert(line) + '\n'
+            result_text = result_text + converter_inst.convert(line) + '\n'
         while result_text.endswith('\n'):
             result_text = result_text[:-1]
         return result_text
