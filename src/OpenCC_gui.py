@@ -187,10 +187,11 @@ class openCCgui(ctk.CTk):
             original_language_suffix = param.radlist.dest_lang[param.radlist.lang_abbrev.index(original_language_abbrev)]
             target_language_suffix = param.radlist.dest_lang[param.radlist.lang_abbrev.index(target_language_abbrev)]
         translation_json = self.chk_selection(f'{self.srclang_radframe.get()}2{target_language_abbrev}')
-        if translation_json == 's2g.json' or translation_json == 'g2s.json':
-            translation_json = resource_path('assets/GujiCC/' + translation_json)
+        
         if(translation_json != None):
             try:
+                if translation_json == 's2g.json' or translation_json == 'g2s.json':
+                    translation_json = resource_path('assets/GujiCC/' + translation_json)
                 OPENCC_INSTANCE = opencc.OpenCC(translation_json)
                 if self._is_convert_from_file_.get():
                     opencc_converter.file_converter(param.file_paths, OPENCC_INSTANCE, target_language_suffix)
