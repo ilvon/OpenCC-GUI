@@ -24,4 +24,4 @@ pip install OpenCC-GUI
 - encoding of files for conversion will be detected, no prior conversion (to UTF-8) is needed  
   - 轉換器會自動偵測文檔的編碼，因此毋需事先將其轉換成UTF-8
 - all resulting files will be placed as same folder of the source files with suffix `_<target_language>` (e.g. `_简体`, `_繁體`)
-  - 已轉換的檔案均會添加其目槱語言的後綴 (e.g. `_简体`, `_繁體`)
+  - 已轉換的檔案均會添加其目標語言的後綴 (e.g. `_简体`, `_繁體`)
