@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '1.1.4'
+VERSION = '1.1.5'
 with open('README.md', 'r', encoding='utf-8') as f:
     LONG_DESC = f.read()
 
@@ -11,9 +11,9 @@ setup(
     packages=find_packages(),
     install_requires=[
         'chardet>=5.2.0',
-        'CTkMessagebox>=2.5',
+        'CTkMessagebox>=2.7',
         'customtkinter>=5.2.2',
-        'OpenCC>=1.1.7',
+        'OpenCC>=1.1.9',
     ],
     description='A simple GUI for OpenCC',
     long_description=LONG_DESC,

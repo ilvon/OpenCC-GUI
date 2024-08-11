@@ -2,7 +2,7 @@
 
 ![RELEASE](https://img.shields.io/github/v/release/ilvon/OpenCC-GUI)
 ![GitHub commits since latest release](https://img.shields.io/github/commits-since/ilvon/OpenCC-GUI/latest)
-![OPENCC](https://img.shields.io/badge/OpenCC-1.1.7-green)
+![OPENCC](https://img.shields.io/badge/OpenCC-1.1.9-green)
 
 GUI implementation of [OpenCC](https://github.com/BYVoid/OpenCC) with additon of [GujiCC](https://github.com/forFudan/GujiCC)
 
