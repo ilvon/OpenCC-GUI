@@ -5,7 +5,7 @@ from CTkMessagebox import CTkMessagebox
 from PIL import Image
 
 class param():
-    main_title = 'OpenCC v1.1.7 GUI'
+    main_title = 'OpenCC v1.1.9 GUI'
     win_width, win_height = 430, 485
     color_theme = 'blue'
     app_mode = 'dark'
